@@ -1,9 +1,5 @@
-FROM openjdk:17-jdk
-
+FROM openjdk:17
+COPY src/Main.java /app/Main.java
 WORKDIR /app
-
-COPY target/springdemo-1.0.0.jar /app/springdemo.jar
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "springdemo.jar"]
+RUN javac Main.java
+CMD ["java", "Main"]
