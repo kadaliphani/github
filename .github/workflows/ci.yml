@@ -24,6 +24,3 @@ jobs:
 
       - name: Run
         run: java -cp src Main
-
-      - name: Build Docker image (local only)
-        run: docker build -t java-demo .
