@@ -1,9 +1,7 @@
-name: Java CI Demo
+name: Java Multi-Stage CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -11,16 +9,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          distribution: 'temurin'
           java-version: '17'
 
-      - name: Compile
-        run: javac src/Main.java
+      - name: Compile Stage
+        run: mvn clean compile
 
-      - name: Run
-        run: java -cp src Main
+      - name: Test Stage
+        run: mvn test
+
+      - name: Package Stage
+        run: mvn package -DskipTests
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spring-app
+          path: target/*.jar
