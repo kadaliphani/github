@@ -1,0 +1,59 @@
+name: Java Multi-Stage CI (Enhanced)
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  APP_NAME: spring-app
+  JAVA_VERSION: '17'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Code (Marketplace Action)
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Java (Marketplace Action)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # 3. Cache Maven Dependencies (Performance Optimization)
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+      # 4. Compile Stage
+      - name: Compile Stage
+        run: mvn clean compile
+
+      # 5. Test Stage
+      - name: Test Stage
+        run: mvn test
+
+      # 6. Package Stage
+      - name: Package Stage
+        run: mvn package -DskipTests
+
+      # 7. Upload Artifact (Marketplace Action)
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}
+          path: target/*.jar
+
+      # 8. Example of Using Secret (Demo Purpose)
+      - name: Demo Secret Usage
+        run: echo "Using secret safely"
+        env:
+          DEMO_SECRET: ${{ secrets.DEMO_SECRET }}
